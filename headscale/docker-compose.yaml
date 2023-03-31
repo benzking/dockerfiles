@@ -1,0 +1,38 @@
+# docker-compose.yaml
+version: "3.9"
+networks:
+  clash_net:
+    external: true
+services:
+  headscale:
+    container_name: headscale
+    image: headscale/headscale
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+    restart: always
+    volumes:
+      - ./config:/etc/headscale
+      - ./data:/var/lib/headscale
+    command: ["headscale", "serve"]
+    networks:
+      - clash_net
+  headscale-ui:
+    image: ghcr.io/gurucomputing/headscale-ui:latest
+    container_name: headscale-ui
+    depends_on:
+      - headscale
+    restart: unless-stopped
+    ports:
+      - 51080:80
+      - 51443:443
+    networks:
+      - clash_net
+

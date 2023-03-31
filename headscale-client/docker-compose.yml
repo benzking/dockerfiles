@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  Headscaled:
+    container_name: Headscaled_Client
+    image: tailscale/tailscale
+    network_mode: host
+    privileged: true
+    restart: always
+    cap_add: 
+      - net_admin
+      - NET_RAW
+      - sys_module
+    volumes:
+      - /mnt/user/appdata/Headscaled_Client/lib:/var/lib
+      - /dev/net/tun:/dev/net/tun
+    #第一次运行初始化
+    #command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
+    #日常运行
+    command: sh -c " tailscaled"
+    
